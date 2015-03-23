@@ -6,19 +6,19 @@
  * @license http://www.gnu.org/licenses/agpl-3.0.txt AGPLv3
  */
 
-.nb-picture-map-editor {
+.picture-map-editor {
 	display: block;
 	position: relative;
 	z-index: 99;
 	width: 100%;
 }
 
-.nb-picture-map-editor > picture img {
+.picture-map-editor > picture img {
 	width: 100%;
 	height: auto;
 }
 
-.nb-picture-map-editor-overlay-ui {
+.picture-map-editor-overlay-ui {
 	display: block;
 	position: absolute;
 	top: 0;
@@ -27,7 +27,7 @@
 	height: 100%;
 }
 
-.nb-picture-map-editor-overlay-ui-bar {
+.picture-map-editor-overlay-ui-bar {
 	display: inline-block;
 	position: absolute;
 	z-index: 1;
@@ -35,7 +35,7 @@
 	left: 1em;
 }
 
-.nb-picture-map-editor-overlay-ui-bar-handle {
+.picture-map-editor-overlay-ui-bar-handle {
 	display: block;
 	height: 1em;
 	background-color: #000;
@@ -44,7 +44,7 @@
 	cursor: move;
 }
 
-.nb-picture-map-editor-overlay-ui-bar ul {
+.picture-map-editor-overlay-ui-bar ul {
 	list-style: none;
 	margin: 0;
 	padding: 0.25em;
@@ -53,13 +53,13 @@
 	border-bottom-right-radius: 0.4em;
 }
 
-.nb-picture-map-editor-overlay-ui-bar li {
+.picture-map-editor-overlay-ui-bar li {
 	list-style: none;
 	margin: 0;
 	padding: 0.25em;
 }
 
-.nb-picture-map-editor-overlay-ui-bar button {
+.picture-map-editor-overlay-ui-bar button {
 	padding: 0;
 	margin: 0;
 	font-size: 1em;
@@ -70,7 +70,7 @@
 	cursor: pointer;
 }
 
-.nb-picture-map-editor-overlay-ui-areas {
+.picture-map-editor-overlay-ui-areas {
 	display: block;
 	position: absolute;
 	z-index: 0;
@@ -81,7 +81,7 @@
 	cursor: crosshair;
 }
 
-.nb-picture-map-editor-overlay-ui-area {
+.picture-map-editor-overlay-ui-area {
 	display: block;
 	position: absolute;
 	padding: 0;
@@ -94,6 +94,6 @@
 	cursor: move;
 }
 
-.nb-picture-map-editor-overlay-ui-area .icon {
+.picture-map-editor-overlay-ui-area .icon {
 	font-size: 1em;
 }

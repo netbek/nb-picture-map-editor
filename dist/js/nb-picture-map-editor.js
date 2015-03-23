@@ -581,9 +581,9 @@ angular.module('nb.pictureMapEditor.templates', ['templates/nb-picture-map-edito
 
 angular.module("templates/nb-picture-map-editor-overlay-ui-areas.html", []).run(["$templateCache", function($templateCache) {
   $templateCache.put("templates/nb-picture-map-editor-overlay-ui-areas.html",
-    "<span class=\"nb-picture-map-editor-overlay-ui-areas\"\n" +
+    "<span class=\"picture-map-editor-overlay-ui-areas\"\n" +
     "	  ng-click=\"click($event)\">\n" +
-    "	<span class=\"nb-picture-map-editor-overlay-ui-area\"\n" +
+    "	<span class=\"picture-map-editor-overlay-ui-area\"\n" +
     "		  ng-repeat=\"area in areas track by area.$$id\"\n" +
     "		  ng-attr-style=\"{{area.style|style}}\"\n" +
     "		  ng-dblclick=\"clickArea(area.$$id)\"\n" +
@@ -598,11 +598,11 @@ angular.module("templates/nb-picture-map-editor-overlay-ui-areas.html", []).run(
 
 angular.module("templates/nb-picture-map-editor-overlay-ui.html", []).run(["$templateCache", function($templateCache) {
   $templateCache.put("templates/nb-picture-map-editor-overlay-ui.html",
-    "<div class=\"nb-picture-map-editor-overlay-ui\">\n" +
-    "	<div class=\"nb-picture-map-editor-overlay-ui-bar\"\n" +
+    "<div class=\"picture-map-editor-overlay-ui\">\n" +
+    "	<div class=\"picture-map-editor-overlay-ui-bar\"\n" +
     "		 jqyoui-draggable=\"{animate: true, onStop: 'stopBarDrag'}\"\n" +
     "		 data-drag=\"true\">\n" +
-    "		<div class=\"nb-picture-map-editor-overlay-ui-bar-handle\"></div>\n" +
+    "		<div class=\"picture-map-editor-overlay-ui-bar-handle\"></div>\n" +
     "		<ul>\n" +
     "			<li ng-repeat=\"button in overlay.buttons track by button.$$id\">\n" +
     "				<button ng-click=\"clickButton(button.$$id)\"\n" +

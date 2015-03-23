@@ -52,7 +52,7 @@
 
 			<div class="container">
 				<div nb-picture-map
-					 class="nb-picture-map-editor"
+					 class="picture-map-editor"
 					 ng-attr-map="{{demoData.map}}"
 					 ng-attr-default-source="{{demoData.styles.small + ', ' + demoData.styles.medium + ' 2x'}}"
 					 ng-attr-sources="{{'[[\'' + demoData.styles.medium + ', ' + demoData.styles.large + ' 2x\', \'medium\'], [\'' + demoData.styles.large + ', ' + demoData.styles.xlarge + ' 2x\', \'large\']]'}}">
