@@ -1,0 +1,15 @@
+<div ng-controller="nbPictureMapEditorDemoAreaDialogController as ctrl"
+	 title="Edit marker">
+	<div class="form-item form-type-select">
+		<label>Bird:</label>
+		<select ng-model="model.data.target_id"
+				ng-options="item.value as item.label for item in ctrl.targetIdOptions"
+				class="form-select">
+		</select>
+	</div>
+
+	<div class="form-actions form-wrapper">
+		<button ng-click="submit()"
+				class="form-submit">Submit</button>
+	</div>
+</div>

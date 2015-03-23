@@ -1,0 +1,13 @@
+<span class="nb-picture-map-editor-overlay-ui-areas"
+	  ng-click="click($event)">
+	<span class="nb-picture-map-editor-overlay-ui-area"
+		  ng-repeat="area in areas track by area.$$id"
+		  ng-attr-style="{{area.style|style}}"
+		  ng-dblclick="clickArea(area.$$id)"
+		  jqyoui-draggable="{animate: true, onStop: 'stopAreaDrag'}"
+		  data-drag="true">
+		<span nb-icon
+			  data-id="{{overlay.icon.id}}"
+			  data-hover-id="{{overlay.icon.hoverId}}"></span>
+	</span>
+</span>

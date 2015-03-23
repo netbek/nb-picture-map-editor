@@ -1,0 +1,29 @@
+<div class="nb-picture-map-editor-overlay-ui">
+	<div class="nb-picture-map-editor-overlay-ui-bar"
+		 jqyoui-draggable="{animate: true, onStop: 'stopBarDrag'}"
+		 data-drag="true">
+		<div class="nb-picture-map-editor-overlay-ui-bar-handle"></div>
+		<ul>
+			<li ng-repeat="button in overlay.buttons track by button.$$id">
+				<button ng-click="clickButton(button.$$id)"
+						ng-class="{'active': button.$active}"
+						ng-attr-title="{{button.title}}"
+						ng-switch="button.$active">
+					<span ng-switch-when="true"
+						  nb-icon-once
+						  data-title="{{button.title}}"
+						  data-color="{{overlay.buttonActiveColor}}"
+						  data-id="{{button.icon.id}}"
+						  data-hover-id="{{button.icon.hoverId}}"></span>
+					<span ng-switch-default
+						  nb-icon-once
+						  data-title="{{button.title}}"
+						  data-color="{{overlay.buttonColor}}"
+						  data-id="{{button.icon.id}}"
+						  data-hover-id="{{button.icon.hoverId}}"></span>
+				</button>
+			</li>
+		</ul>
+	</div>
+	<div nb-picture-map-editor-overlay-ui-areas></div>
+</div>
