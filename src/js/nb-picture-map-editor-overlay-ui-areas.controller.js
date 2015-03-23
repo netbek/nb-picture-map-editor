@@ -83,21 +83,15 @@
 			area.coords = _.map(area.coords, precision);
 			area.$$coords = _.map(area.$$coords, precision);
 
-			// Add the area to the map.
+			// Add the area to the map and overlays.
 			area = nbPictureService.setMapArea(pictureId, area);
 
 			if (area === false) {
 				// @todo Handle error
 			}
 			else {
-				// Add the area to the overlay.
-				if (nbPictureService.setMapOverlayArea(pictureId, overlayId, area)) {
-					dirty = true;
-					openAreaDialog(area);
-				}
-				else {
-					// @todo Handle error
-				}
+				dirty = true;
+				openAreaDialog(area);
 			}
 
 			if (dirty) {
@@ -258,7 +252,7 @@
 		 *
 		 */
 		function render () {
-			var areas = nbPictureService.getMapOverlayAreas(pictureId, overlayId);
+			var areas = _.cloneDeep(nbPictureService.getMapOverlayAreas(pictureId, overlayId));
 
 			_.forEach(areas, function (area, index) {
 				var center = nbPictureUtilService.getCenter(area.shape, area.$$coords, true);
