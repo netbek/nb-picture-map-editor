@@ -27,14 +27,17 @@
 		<script src="../bower_components/nb-icon/dist/js/nb-icon.js"></script>
 		<script src="../bower_components/nb-picture/dist/js/nb-picture.js"></script>
 
+		<script src="../dist/js/nb-picture-map-editor.js"></script>
+<!--
 		<script src="../src/js/nb-picture-map-editor.module.js"></script>
 		<script src="../src/js/nb-picture-map-editor.filters.js"></script>
+		<script src="../src/js/nb-picture-map-editor.directive.js"></script>
 		<script src="../src/js/nb-picture-map-editor-overlay-ui.controller.js"></script>
 		<script src="../src/js/nb-picture-map-editor-overlay-ui.directive.js"></script>
 		<script src="../src/js/nb-picture-map-editor-overlay-ui-areas.controller.js"></script>
 		<script src="../src/js/nb-picture-map-editor-overlay-ui-areas.directive.js"></script>
 		<script src="../src/js/nb-picture-map-editor-templates.js"></script>
-
+-->
 		<script src="js/nb-picture-map-editor-demo.module.js"></script>
 		<script src="js/nb-picture-map-editor-demo-config.service.js"></script>
 		<script src="js/nb-picture-map-editor-demo-input.directive.js"></script>
@@ -47,12 +50,11 @@
 		<div ng-controller="nbPictureMapEditorDemoMainController">
 			<div>
 				<input type="hidden" nb-picture-map-editor-demo-input ng-value="model.value" />
-				<textarea nb-picture-map-editor-demo-input cols="50" rows="5" ng-model="model.value"></textarea>
 			</div>
 
 			<div class="container">
 				<div nb-picture-map
-					 class="picture-map-editor"
+					 nb-picture-map-editor
 					 ng-attr-map="{{demoData.map}}"
 					 ng-attr-default-source="{{demoData.styles.small + ', ' + demoData.styles.medium + ' 2x'}}"
 					 ng-attr-sources="{{'[[\'' + demoData.styles.medium + ', ' + demoData.styles.large + ' 2x\', \'medium\'], [\'' + demoData.styles.large + ', ' + demoData.styles.xlarge + ' 2x\', \'large\']]'}}">
