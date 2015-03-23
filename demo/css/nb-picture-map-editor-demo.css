@@ -6,6 +6,18 @@
  * @license http://www.gnu.org/licenses/agpl-3.0.txt AGPLv3
  */
 
-.container {
-	padding: 2em 10%;
+body {
+	padding: 10%;
+}
+
+.ui-dialog .ui-dialog-content {
+	padding: 1em;
+}
+
+.form-item label {
+	margin-right: 1em;
+}
+
+.form-actions {
+	margin-top: 1em;
 }
