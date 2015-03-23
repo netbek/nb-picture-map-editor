@@ -88,9 +88,9 @@
 		 * @param {String} id Button ID.
 		 */
 		$scope.clickButton = function (id) {
-			if (tool !== id) {
+			if (tool !== id && $scope.overlay.buttons && $scope.overlay.buttons[id]) {
 				_.forEach($scope.overlay.buttons, function (value, key) {
-					$scope.overlay.buttons[key].$active = (key === id);
+					$scope.overlay.buttons[key].$$active = (key === id);
 				});
 				tool = id;
 			}
@@ -155,13 +155,15 @@
 			if (!flags.render) {
 				flags.render = true;
 
-				// Add ID to buttons.
-				_.forEach($scope.overlay.buttons, function (value, key) {
-					$scope.overlay.buttons[key].$$id = key;
-				});
+				if ($scope.overlay.buttons) {
+					// Add ID to buttons.
+					_.forEach($scope.overlay.buttons, function (value, key) {
+						$scope.overlay.buttons[key].$$id = key;
+					});
 
-				// Activate the first button.
-				$scope.clickButton(_.keys($scope.overlay.buttons)[0]);
+					// Activate the first button.
+					$scope.clickButton(_.keys($scope.overlay.buttons)[0]);
+				}
 			}
 		}
 
@@ -599,16 +601,17 @@ angular.module("templates/nb-picture-map-editor-overlay-ui-areas.html", []).run(
 angular.module("templates/nb-picture-map-editor-overlay-ui.html", []).run(["$templateCache", function($templateCache) {
   $templateCache.put("templates/nb-picture-map-editor-overlay-ui.html",
     "<div class=\"picture-map-editor-overlay-ui\">\n" +
-    "	<div class=\"picture-map-editor-overlay-ui-bar\"\n" +
+    "	<div ng-if=\"overlay.buttons\"\n" +
+    "		 class=\"picture-map-editor-overlay-ui-bar\"\n" +
     "		 jqyoui-draggable=\"{animate: true, onStop: 'stopBarDrag'}\"\n" +
     "		 data-drag=\"true\">\n" +
     "		<div class=\"picture-map-editor-overlay-ui-bar-handle\"></div>\n" +
     "		<ul>\n" +
     "			<li ng-repeat=\"button in overlay.buttons track by button.$$id\">\n" +
     "				<button ng-click=\"clickButton(button.$$id)\"\n" +
-    "						ng-class=\"{'active': button.$active}\"\n" +
+    "						ng-class=\"{'active': button.$$active}\"\n" +
     "						ng-attr-title=\"{{button.title}}\"\n" +
-    "						ng-switch=\"button.$active\">\n" +
+    "						ng-switch=\"button.$$active\">\n" +
     "					<span ng-switch-when=\"true\"\n" +
     "						  nb-icon-once\n" +
     "						  data-title=\"{{button.title}}\"\n" +

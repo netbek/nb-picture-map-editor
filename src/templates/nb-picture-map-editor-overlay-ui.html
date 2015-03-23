@@ -1,14 +1,15 @@
 <div class="picture-map-editor-overlay-ui">
-	<div class="picture-map-editor-overlay-ui-bar"
+	<div ng-if="overlay.buttons"
+		 class="picture-map-editor-overlay-ui-bar"
 		 jqyoui-draggable="{animate: true, onStop: 'stopBarDrag'}"
 		 data-drag="true">
 		<div class="picture-map-editor-overlay-ui-bar-handle"></div>
 		<ul>
 			<li ng-repeat="button in overlay.buttons track by button.$$id">
 				<button ng-click="clickButton(button.$$id)"
-						ng-class="{'active': button.$active}"
+						ng-class="{'active': button.$$active}"
 						ng-attr-title="{{button.title}}"
-						ng-switch="button.$active">
+						ng-switch="button.$$active">
 					<span ng-switch-when="true"
 						  nb-icon-once
 						  data-title="{{button.title}}"

@@ -44,9 +44,9 @@
 		 * @param {String} id Button ID.
 		 */
 		$scope.clickButton = function (id) {
-			if (tool !== id) {
+			if (tool !== id && $scope.overlay.buttons && $scope.overlay.buttons[id]) {
 				_.forEach($scope.overlay.buttons, function (value, key) {
-					$scope.overlay.buttons[key].$active = (key === id);
+					$scope.overlay.buttons[key].$$active = (key === id);
 				});
 				tool = id;
 			}
@@ -111,13 +111,15 @@
 			if (!flags.render) {
 				flags.render = true;
 
-				// Add ID to buttons.
-				_.forEach($scope.overlay.buttons, function (value, key) {
-					$scope.overlay.buttons[key].$$id = key;
-				});
+				if ($scope.overlay.buttons) {
+					// Add ID to buttons.
+					_.forEach($scope.overlay.buttons, function (value, key) {
+						$scope.overlay.buttons[key].$$id = key;
+					});
 
-				// Activate the first button.
-				$scope.clickButton(_.keys($scope.overlay.buttons)[0]);
+					// Activate the first button.
+					$scope.clickButton(_.keys($scope.overlay.buttons)[0]);
+				}
 			}
 		}
 
