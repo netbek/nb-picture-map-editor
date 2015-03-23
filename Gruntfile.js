@@ -101,11 +101,20 @@ module.exports = function (grunt) {
 				},
 				files: [{cwd: 'src/svg/icon/', src: ['*.svg'], dest: 'src/img/'}]
 			}
+		},
+		copy: {
+			dist: {
+				files: [
+					{expand: true, cwd: 'src/img', src: ['**'], dest: 'dist/img/'},
+					{expand: true, cwd: 'src/svg', src: ['**'], dest: 'dist/svg/'}
+				]
+			}
 		}
 	});
 
 	grunt.loadNpmTasks('grunt-contrib-clean');
 	grunt.loadNpmTasks('grunt-contrib-concat');
+	grunt.loadNpmTasks('grunt-contrib-copy');
 	grunt.loadNpmTasks('grunt-contrib-cssmin');
 	grunt.loadNpmTasks('grunt-contrib-jshint');
 	grunt.loadNpmTasks('grunt-contrib-uglify');
@@ -122,6 +131,7 @@ module.exports = function (grunt) {
 		'uglify',
 		'svgstore',
 		'svg2png_colorfy',
+		'copy',
 		'clean:exit',
 	]);
 
