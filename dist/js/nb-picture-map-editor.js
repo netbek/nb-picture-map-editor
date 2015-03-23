@@ -54,6 +54,30 @@
 	'use strict';
 
 	angular
+		.module('nb.picture')
+		.directive('nbPictureMapEditor', nbPictureMapEditorDirective);
+
+	function nbPictureMapEditorDirective () {
+		return {
+			restrict: 'EA',
+			link: function (scope, element, attrs, controller) {
+				element.addClass('picture-map-editor');
+			}
+		};
+	}
+})(window, window.angular);
+/**
+ * AngularJS image map editor
+ *
+ * @author Hein Bekker <hein@netbek.co.za>
+ * @copyright (c) 2015 Hein Bekker
+ * @license http://www.gnu.org/licenses/agpl-3.0.txt AGPLv3
+ */
+
+(function (window, angular, undefined) {
+	'use strict';
+
+	angular
 		.module('nb.pictureMapEditor')
 		.controller('nbPictureMapEditorOverlayUiController', nbPictureMapEditorOverlayUiController);
 
@@ -260,6 +284,7 @@
 		};
 		var deregister = [];
 		var pictureId;
+		var $body = jQuery('body');
 
 		$scope.areas = []; // {Array} Array of highlighted map areas (not necessarily all).
 
@@ -277,13 +302,16 @@
 
 			var dirty = false;
 
+			var scrollTop = $body.scrollTop() || 0;
+			var scrollLeft = $body.scrollLeft() || 0;
+
 			var $parent = $target.parent();
 			var parentOffset = $parent.offset();
 			var parentWidth = $parent.outerWidth();
 			var parentHeight = $parent.outerHeight();
 
-			var absX = event.clientX - parentOffset.left;
-			var absY = event.clientY - parentOffset.top;
+			var absX = scrollLeft + event.clientX - parentOffset.left;
+			var absY = scrollTop + event.clientY - parentOffset.top;
 			var relX = absX / parentWidth;
 			var relY = absY / parentHeight;
 
