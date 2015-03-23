@@ -22,6 +22,7 @@
 		};
 		var deregister = [];
 		var pictureId;
+		var $body = jQuery('body');
 
 		$scope.areas = []; // {Array} Array of highlighted map areas (not necessarily all).
 
@@ -39,13 +40,16 @@
 
 			var dirty = false;
 
+			var scrollTop = $body.scrollTop() || 0;
+			var scrollLeft = $body.scrollLeft() || 0;
+
 			var $parent = $target.parent();
 			var parentOffset = $parent.offset();
 			var parentWidth = $parent.outerWidth();
 			var parentHeight = $parent.outerHeight();
 
-			var absX = event.clientX - parentOffset.left;
-			var absY = event.clientY - parentOffset.top;
+			var absX = scrollLeft + event.clientX - parentOffset.left;
+			var absY = scrollTop + event.clientY - parentOffset.top;
 			var relX = absX / parentWidth;
 			var relY = absY / parentHeight;
 
