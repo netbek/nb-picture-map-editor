@@ -233,9 +233,7 @@
 			}));
 
 			deregister.push($scope.$on('nbPicture:resize', function (e) {
-				if (nbPictureService.onResize(pictureId, overlayId)) {
-					render();
-				}
+				render();
 			}));
 		};
 
