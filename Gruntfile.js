@@ -50,6 +50,7 @@ module.exports = function (grunt) {
 				src: [
 					'src/js/nb-picture-map-editor.module.js',
 					'src/js/nb-picture-map-editor.filters.js',
+					'src/js/nb-picture-map-editor.directive.js',
 					'src/js/nb-picture-map-editor-overlay-ui.controller.js',
 					'src/js/nb-picture-map-editor-overlay-ui.directive.js',
 					'src/js/nb-picture-map-editor-overlay-ui-areas.controller.js',
