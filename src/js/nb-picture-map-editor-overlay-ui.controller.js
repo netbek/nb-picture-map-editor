@@ -16,7 +16,7 @@
 	nbPictureMapEditorOverlayUiController.$inject = ['$scope', '$element', '$attrs', '$timeout', '_', 'nbPictureService', 'nbPictureUtilService'];
 	function nbPictureMapEditorOverlayUiController ($scope, $element, $attrs, $timeout, _, nbPictureService, nbPictureUtilService) {
 		/*jshint validthis: true */
-		var overlayId = 'ui'; // {String} Overlay ID as defined in config.
+		var overlayId = 'editorUi'; // {String} Overlay ID as defined in config.
 		var flags = {
 			init: false, // {Boolean} Whether init() has been fired.
 			initTools: false // {Boolean} Whether initTools() has been fired.

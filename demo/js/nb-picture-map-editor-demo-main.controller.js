@@ -46,13 +46,13 @@
 				resize: true,
 				relCoords: true,
 				overlays: {
-					uiAreas: {
+					editorUiAreas: {
 						alwaysOn: true,
 						icon: {
 							id: 'marker-glow'
 						}
 					},
-					ui: {
+					editorUi: {
 						alwaysOn: true,
 						buttonColor: 'grey',
 						buttonActiveColor: 'white',
