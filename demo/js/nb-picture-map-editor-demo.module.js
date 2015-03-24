@@ -32,7 +32,7 @@
 				nbPictureConfigProvider.set({
 					map: {
 						overlays: {
-							ui: {
+							editorUi: {
 								defaultArea: {
 									shape: 'circle',
 									coords: function (x, y) {
@@ -41,7 +41,7 @@
 								},
 								areaDialog: {
 									id: 'nbPictureMapEditorDemoAreaDialog',
-									templateUrl: 'templates/nb-picture-map-editor-demo-area-dialog.html?_='+Date.now(),
+									templateUrl: 'templates/nb-picture-map-editor-demo-area-dialog.html?_=' + Date.now(),
 									model: function (area) {
 										return {
 											data: {
@@ -54,6 +54,17 @@
 										modal: true
 									},
 									targetIdField: 'field_birds'
+								}
+							},
+							editorDebug: {
+								build: function (area) {
+									return {
+										content: area.shape + '<br />Target: ' + area.data.target_id,
+										style: {
+											left: area.$$centerCoords[0] + 'px',
+											top: area.$$centerCoords[1] + 'px'
+										}
+									};
 								}
 							}
 						}

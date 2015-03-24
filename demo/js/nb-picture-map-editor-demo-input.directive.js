@@ -21,7 +21,7 @@
 			link: function (scope, element, attrs, controller) {
 				scope.model = {};
 
-				scope.$on('nbPictureMapEditor:mapAreas', function (e, areas) {
+				scope.$on('nbPicture:mapAreasChanged', function (e, areas) {
 					var clone = [];
 
 					_.forEach(areas, function (area) {

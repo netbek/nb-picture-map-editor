@@ -40,7 +40,12 @@
 				});
 				return str;
 			};
-		});
+		})
+		.filter('trustedHtml', ['$sce', function ($sce) {
+				return function (input) {
+					return $sce.trustAsHtml(input);
+				};
+			}]);
 })(window, window.angular);
 /**
  * AngularJS image map editor
@@ -84,7 +89,7 @@
 	nbPictureMapEditorOverlayUiController.$inject = ['$scope', '$element', '$attrs', '$timeout', '_', 'nbPictureService', 'nbPictureUtilService'];
 	function nbPictureMapEditorOverlayUiController ($scope, $element, $attrs, $timeout, _, nbPictureService, nbPictureUtilService) {
 		/*jshint validthis: true */
-		var overlayId = 'ui'; // {String} Overlay ID as defined in config.
+		var overlayId = 'editorUi'; // {String} Overlay ID as defined in config.
 		var flags = {
 			init: false, // {Boolean} Whether init() has been fired.
 			initTools: false // {Boolean} Whether initTools() has been fired.
@@ -92,9 +97,8 @@
 		var deregister = [];
 		var pictureId;
 
-		var tools; // {Array}
-		var shape; // {String}
-		var debug; // {Boolean}
+		var tools; // {Object} Flat copy of `$scope.overlay.tools` keyed by tool ID.
+		var shape; // {String} Current shape.
 
 		/**
 		 * Fired after the toolbar is dropped.
@@ -180,91 +184,87 @@
 			flags.initTools = true;
 
 			tools = {};
-			var overlayTools = [];
-			var toggleToolIds = [];
+			var newTools = [];
+			var toggleTools = [];
 
 			_.forEach($scope.overlay.tools, function (group, groupsId) {
 				if (group.type === 'group') {
 					var newGroup = [];
 
 					_.forEach(group.tools, function (tool, toolsId) {
-						var id = groupsId + '/' + toolsId;
+						var toolId = groupsId + '/' + toolsId;
 						var newTool = _.pick(tool, ['icon', 'title']);
-						newTool.$$id = id;
+						newTool.$$id = toolId;
 						newTool.$$group = groupsId;
 						newTool.type = 'button';
-						tools[id] = newTool;
 
+						tools[toolId] = newTool;
 						newGroup.push(newTool);
 
 						if (tool.active) {
-							toggleToolIds.push(id);
+							toggleTools.push(toolId);
 						}
 					});
 
-					overlayTools.push({
+					newTools.push({
 						$$id: groupsId,
 						type: 'group',
 						tools: newGroup
 					});
 				}
 				else {
-					var id = groupsId;
+					var toolId = groupsId;
 					var newTool = _.pick(group, ['icon', 'title']);
-					newTool.$$id = id;
+					newTool.$$id = toolId;
 					newTool.$$group = groupsId;
 					newTool.type = 'button';
-					tools[groupsId] = newTool;
 
-					overlayTools.push(newTool);
+					tools[groupsId] = newTool;
+					newTools.push(newTool);
 
 					if (group.active) {
-						toggleToolIds.push(id);
+						toggleTools.push(toolId);
 					}
 				}
 			});
 
-			$scope.overlay.tools = overlayTools;
+			$scope.overlay.tools = newTools;
 
-			_.forEach(toggleToolIds, function (toolId) {
+			_.forEach(toggleTools, function (toolId) {
 				toggleTool(toolId);
 			});
 		}
 
 		/**
 		 *
-		 * @param {string} toolId
+		 * @param {string} toolId Tool ID. Format: "group/tool" for tools in groups, "tool" for tools not in groups.
 		 */
 		function toggleTool (toolId) {
-			if (!tools || !tools[toolId]) {
-				return;
+			var parts = toolId.split('/');
+
+			// @todo Use the following once tools are pluggable.
+//			if (parts.length === 1) {
+//				toggleSingle();
+//			}
+//			else if (parts.length === 2) {
+//				toggleGroup();
+//			}
+
+			if (parts[0] === 'debug') {
+				var overlay = nbPictureService.getMapOverlay(pictureId, 'editorDebug');
+				var flag = !(overlay.show);
+				toggleSingle(toolId, flag);
+				nbPictureService[flag ? 'showMapOverlay' : 'hideMapOverlay'](pictureId, 'editorDebug');
 			}
-
-			var p = toolId.split('/');
-			var tool = tools[toolId];
-
-			if (p[0] === 'debug') {
-				if (tool.$$active) {
-					debug = false;
-					toggleSingle(toolId, false);
-				}
-				else {
-					debug = true;
-					toggleSingle(toolId, true);
-				}
-
-				// @todo
-				console.log('toggle debug ' + debug);
-			}
-			else if (p[0] === 'shape') {
-				shape = p[1];
+			else if (parts[0] === 'shape') {
+				shape = parts[1];
 				toggleGroup(toolId);
 			}
 		}
 
 		/**
 		 *
-		 * @param {String} toolId
+		 * @param {String} toolId Tool ID. Format: "tool".
 		 * @param {Boolean} flag
 		 */
 		function toggleSingle (toolId, flag) {
@@ -278,12 +278,12 @@
 
 		/**
 		 *
-		 * @param {String} toolId
+		 * @param {String} toolId Tool ID. Format: "group/tool".
 		 * @param {Boolean} flag
 		 */
 		function toggleGroup (toolId, flag) {
-			var p = toolId.split('/');
-			var siblings = _.where(tools, {$$group: p[0]});
+			var parts = toolId.split('/');
+			var siblings = _.where(tools, {$$group: parts[0]});
 
 			_.forEach(siblings, function (sibling) {
 				var active;
@@ -302,8 +302,8 @@
 
 				sibling.$$active = active;
 
-				var p = sibling.$$id.split('/');
-				var group = _.find($scope.overlay.tools, {$$group: p[0]});
+				var parts = sibling.$$id.split('/');
+				var group = _.find($scope.overlay.tools, {$$group: parts[0]});
 				if (group) {
 					var tool = _.find(group.tools, {$$id: toolId});
 					if (tool) {
@@ -400,7 +400,7 @@
 	nbPictureMapEditorOverlayUiAreasController.$inject = ['$scope', '$element', '$attrs', '$timeout', '_', 'nbPictureConfig', 'nbPictureUtilService', 'nbPictureService', 'dialogService', 'PICTURE_SHAPE'];
 	function nbPictureMapEditorOverlayUiAreasController ($scope, $element, $attrs, $timeout, _, nbPictureConfig, nbPictureUtilService, nbPictureService, dialogService, PICTURE_SHAPE) {
 		/*jshint validthis: true */
-		var overlayId = 'uiAreas'; // {String} Overlay ID as defined in config.
+		var overlayId = 'editorUiAreas'; // {String} Overlay ID as defined in config.
 		var flags = {
 			init: false // {Boolean} Whether init() has been fired.
 		};
@@ -438,7 +438,7 @@
 			var relY = absY / parentHeight;
 
 			var map = nbPictureService.getMap(pictureId);
-			var defaultArea = nbPictureConfig.map.overlays.ui.defaultArea;
+			var defaultArea = nbPictureConfig.map.overlays.editorUi.defaultArea;
 
 			// Build the area.
 			var area = {
@@ -480,10 +480,7 @@
 
 			if (dirty) {
 				$timeout(function () {
-					$scope.$emit('nbPictureMapEditor:mapAreas', nbPictureService.getMapAreas(pictureId));
-
-					render();
-					$scope.$apply();
+					$scope.$emit('nbPicture:mapAreasChanged', nbPictureService.getMapAreas(pictureId));
 				});
 			}
 		};
@@ -554,10 +551,7 @@
 
 			if (dirty) {
 				$timeout(function () {
-					$scope.$emit('nbPictureMapEditor:mapAreas', nbPictureService.getMapAreas(pictureId));
-
-					render();
-					$scope.$apply();
+					$scope.$emit('nbPicture:mapAreasChanged', nbPictureService.getMapAreas(pictureId));
 				});
 			}
 		};
@@ -583,7 +577,7 @@
 
 				$scope.overlay = nbPictureService.getMapOverlay(pictureId, overlayId);
 
-				$scope.$emit('nbPictureMapEditor:mapAreas', nbPictureService.getMapAreas(pictureId));
+				$scope.$emit('nbPicture:mapAreasChanged', nbPictureService.getMapAreas(pictureId));
 
 				if (nbPictureService.onBaseLoad(pictureId, overlayId)) {
 					render();
@@ -616,9 +610,8 @@
 				}
 			}));
 
-			deregister.push($scope.$on('nbPicture:resize', function (e) {
-				render();
-			}));
+			deregister.push($scope.$on('nbPicture:resize', render));
+			deregister.push($scope.$on('nbPicture:render', render));
 		};
 
 		/**
@@ -641,7 +634,7 @@
 				var size = nbPictureUtilService.getSize(area.shape, area.$$coords);
 				var avgSize = Math.round((size.width + size.height) / 2);
 
-				areas[index].style = {
+				area.$$style = {
 					'top': center[1] + 'px',
 					'left': center[0] + 'px',
 					'font-size': avgSize + 'px'
@@ -656,7 +649,7 @@
 		 * @param {Object} area
 		 */
 		function openAreaDialog (area) {
-			var config = nbPictureConfig.map.overlays.ui.areaDialog;
+			var config = nbPictureConfig.map.overlays.editorUi.areaDialog;
 			var model;
 
 			if (angular.isFunction(config.model)) {
@@ -671,10 +664,7 @@
 					nbPictureService.setMapArea(pictureId, _.merge({}, area, result));
 
 					$timeout(function () {
-						$scope.$emit('nbPictureMapEditor:mapAreas', nbPictureService.getMapAreas(pictureId));
-
-						render();
-						$scope.$apply();
+						$scope.$emit('nbPicture:mapAreasChanged', nbPictureService.getMapAreas(pictureId));
 					});
 				});
 		}
@@ -721,7 +711,164 @@
 		};
 	}
 })(window, window.angular);
-angular.module('nb.pictureMapEditor.templates', ['templates/nb-picture-map-editor-overlay-ui-areas.html', 'templates/nb-picture-map-editor-overlay-ui.html']);
+/**
+ * AngularJS image map editor
+ *
+ * @author Hein Bekker <hein@netbek.co.za>
+ * @copyright (c) 2015 Hein Bekker
+ * @license http://www.gnu.org/licenses/agpl-3.0.txt AGPLv3
+ */
+
+(function (window, angular, undefined) {
+	'use strict';
+
+	angular
+		.module('nb.pictureMapEditor')
+		.controller('nbPictureMapEditorOverlayDebugController', nbPictureMapEditorOverlayDebugController);
+
+	nbPictureMapEditorOverlayDebugController.$inject = ['$scope', '$element', '$attrs', '$timeout', '_', 'nbPictureConfig', 'nbPictureUtilService', 'nbPictureService', 'dialogService', 'PICTURE_SHAPE'];
+	function nbPictureMapEditorOverlayDebugController ($scope, $element, $attrs, $timeout, _, nbPictureConfig, nbPictureUtilService, nbPictureService, dialogService, PICTURE_SHAPE) {
+		/*jshint validthis: true */
+		var overlayId = 'editorDebug'; // {String} Overlay ID as defined in config.
+		var flags = {
+			init: false // {Boolean} Whether init() has been fired.
+		};
+		var deregister = [];
+		var pictureId;
+
+		$scope.areas = []; // {Array} Array of highlighted map areas (not necessarily all).
+
+		/**
+		 *
+		 */
+		this.init = function () {
+			if (flags.init) {
+				return;
+			}
+
+			flags.init = true;
+
+			deregister.push($scope.$watch('$parent.$parent.picture.$$id', function (newValue, oldValue) {
+				if (newValue) {
+					pictureId = newValue;
+				}
+			}));
+
+			var onBaseLoad = function () {
+				completeWatch();
+
+				$scope.overlay = nbPictureService.getMapOverlay(pictureId, overlayId);
+
+				if (nbPictureService.onBaseLoad(pictureId, overlayId)) {
+					render();
+				}
+			};
+			var completeWatch = angular.noop;
+
+			// Create a one-time watcher for `picture.$$complete`. This is needed
+			// because the directive might fire its controller's `init()` after
+			// the image has been loaded. If this happened, then the controller
+			// would not see the `nbPicture:baseLoad` event.
+			(function () {
+				completeWatch = $scope.$watch('$parent.$parent.picture.$$complete', function (newValue, oldValue) {
+					if (newValue) {
+						onBaseLoad();
+					}
+				});
+				deregister.push(completeWatch);
+			})();
+
+			deregister.push($scope.$on('nbPicture:baseLoad', function (e) {
+				onBaseLoad();
+			}));
+
+			deregister.push($scope.$on('nbPicture:baseError', function (e) {
+				completeWatch();
+
+				if (nbPictureService.onBaseError(pictureId, overlayId)) {
+					render();
+				}
+			}));
+
+			deregister.push($scope.$on('nbPicture:resize', render));
+			deregister.push($scope.$on('nbPicture:render', render));
+		};
+
+		/**
+		 *
+		 */
+		this.destroy = function () {
+			_.forEach(deregister, function (fn) {
+				fn();
+			});
+		};
+
+		/**
+		 *
+		 */
+		function render () {
+			var buildFn = nbPictureConfig.map.overlays.editorDebug.build;
+			var areas = _.cloneDeep(nbPictureService.getMapOverlayAreas(pictureId, overlayId));
+
+			_.forEach(areas, function (area, index) {
+				area.$$centerCoords = nbPictureUtilService.getCenter(area.shape, area.$$coords, true);
+
+				var build = buildFn(area);
+
+				area.$$content = build.content;
+				area.$$style = build.style;
+			});
+
+			$scope.areas = areas;
+		}
+	}
+})(window, window.angular);
+/**
+ * AngularJS image map editor
+ *
+ * @author Hein Bekker <hein@netbek.co.za>
+ * @copyright (c) 2015 Hein Bekker
+ * @license http://www.gnu.org/licenses/agpl-3.0.txt AGPLv3
+ */
+
+(function (window, angular, undefined) {
+	'use strict';
+
+	angular
+		.module('nb.pictureMapEditor')
+		.directive('nbPictureMapEditorOverlayDebug', nbPictureMapEditorOverlayDebugDirective);
+
+	function nbPictureMapEditorOverlayDebugDirective () {
+		return {
+			restrict: 'EA',
+			replace: true,
+			scope: true,
+			controller: 'nbPictureMapEditorOverlayDebugController',
+			templateUrl: '../src/templates/nb-picture-map-editor-overlay-debug.html?_='+Date.now(),
+			link: function (scope, element, attrs, controller) {
+				controller.init();
+
+				scope.$on('$destroy', function () {
+					controller.destroy();
+				});
+			}
+		};
+	}
+})(window, window.angular);
+angular.module('nb.pictureMapEditor.templates', ['templates/nb-picture-map-editor-overlay-debug.html', 'templates/nb-picture-map-editor-overlay-ui-areas.html', 'templates/nb-picture-map-editor-overlay-ui.html']);
+
+angular.module("templates/nb-picture-map-editor-overlay-debug.html", []).run(["$templateCache", function($templateCache) {
+  $templateCache.put("templates/nb-picture-map-editor-overlay-debug.html",
+    "<span class=\"picture-map-editor-overlay-debug\"\n" +
+    "	  ng-show=\"overlay.show\"\n" +
+    "	  ng-click=\"click($event)\">\n" +
+    "	<span class=\"picture-map-editor-overlay-debug-popup\"\n" +
+    "		  ng-repeat=\"area in areas track by area.$$id\"\n" +
+    "		  ng-attr-style=\"{{area.$$style|style}}\">\n" +
+    "		<span ng-bind-html=\"area.$$content|trustedHtml\"></span>\n" +
+    "	</span>\n" +
+    "</span>");
+}]);
 
 angular.module("templates/nb-picture-map-editor-overlay-ui-areas.html", []).run(["$templateCache", function($templateCache) {
   $templateCache.put("templates/nb-picture-map-editor-overlay-ui-areas.html",
@@ -729,7 +876,7 @@ angular.module("templates/nb-picture-map-editor-overlay-ui-areas.html", []).run(
     "	  ng-click=\"click($event)\">\n" +
     "	<span class=\"picture-map-editor-overlay-ui-area\"\n" +
     "		  ng-repeat=\"area in areas track by area.$$id\"\n" +
-    "		  ng-attr-style=\"{{area.style|style}}\"\n" +
+    "		  ng-attr-style=\"{{area.$$style|style}}\"\n" +
     "		  ng-dblclick=\"clickArea(area.$$id)\"\n" +
     "		  jqyoui-draggable=\"{animate: true, onStop: 'stopAreaDrag'}\"\n" +
     "		  data-drag=\"true\">\n" +
@@ -747,6 +894,7 @@ angular.module("templates/nb-picture-map-editor-overlay-ui.html", []).run(["$tem
     "		 class=\"picture-map-editor-overlay-ui-bar\"\n" +
     "		 jqyoui-draggable=\"{animate: true, onStop: 'stopBarDrag'}\"\n" +
     "		 data-drag=\"true\">\n" +
+    "		<div class=\"picture-map-editor-overlay-ui-tools-handle\"></div>\n" +
     "		<ul class=\"picture-map-editor-overlay-ui-tools-content\">\n" +
     "			<li ng-repeat=\"group in overlay.tools track by group.$$id\">\n" +
     "				<div ng-switch=\"group.type\">\n" +

@@ -36,6 +36,8 @@
 		<script src="../src/js/nb-picture-map-editor-overlay-ui.directive.js"></script>
 		<script src="../src/js/nb-picture-map-editor-overlay-ui-areas.controller.js"></script>
 		<script src="../src/js/nb-picture-map-editor-overlay-ui-areas.directive.js"></script>
+		<script src="../src/js/nb-picture-map-editor-overlay-debug.controller.js"></script>
+		<script src="../src/js/nb-picture-map-editor-overlay-debug.directive.js"></script>
 		<script src="../src/js/nb-picture-map-editor-templates.js"></script>
 
 		<script src="js/nb-picture-map-editor-demo.module.js"></script>
@@ -59,6 +61,7 @@
 					 ng-attr-default-source="{{demoData.styles.small + ', ' + demoData.styles.medium + ' 2x'}}"
 					 ng-attr-sources="{{'[[\'' + demoData.styles.medium + ', ' + demoData.styles.large + ' 2x\', \'medium\'], [\'' + demoData.styles.large + ', ' + demoData.styles.xlarge + ' 2x\', \'large\']]'}}">
 					<div nb-picture-map-editor-overlay-ui></div>
+					<div nb-picture-map-editor-overlay-debug></div>
 				</div>
 			</div>
 		</div>

@@ -19,5 +19,10 @@
 				});
 				return str;
 			};
-		});
+		})
+		.filter('trustedHtml', ['$sce', function ($sce) {
+				return function (input) {
+					return $sce.trustAsHtml(input);
+				};
+			}]);
 })(window, window.angular);

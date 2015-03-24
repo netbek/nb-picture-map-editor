@@ -3,6 +3,7 @@
 		 class="picture-map-editor-overlay-ui-bar"
 		 jqyoui-draggable="{animate: true, onStop: 'stopBarDrag'}"
 		 data-drag="true">
+		<div class="picture-map-editor-overlay-ui-tools-handle"></div>
 		<ul class="picture-map-editor-overlay-ui-tools-content">
 			<li ng-repeat="group in overlay.tools track by group.$$id">
 				<div ng-switch="group.type">

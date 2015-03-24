@@ -54,7 +54,7 @@
 			var relY = absY / parentHeight;
 
 			var map = nbPictureService.getMap(pictureId);
-			var defaultArea = nbPictureConfig.map.overlays.ui.defaultArea;
+			var defaultArea = nbPictureConfig.map.overlays.editorUi.defaultArea;
 
 			// Build the area.
 			var area = {
@@ -96,10 +96,7 @@
 
 			if (dirty) {
 				$timeout(function () {
-					$scope.$emit('nbPictureMapEditor:mapAreas', nbPictureService.getMapAreas(pictureId));
-
-					render();
-					$scope.$apply();
+					$scope.$emit('nbPicture:mapAreasChanged', nbPictureService.getMapAreas(pictureId));
 				});
 			}
 		};
@@ -170,10 +167,7 @@
 
 			if (dirty) {
 				$timeout(function () {
-					$scope.$emit('nbPictureMapEditor:mapAreas', nbPictureService.getMapAreas(pictureId));
-
-					render();
-					$scope.$apply();
+					$scope.$emit('nbPicture:mapAreasChanged', nbPictureService.getMapAreas(pictureId));
 				});
 			}
 		};
@@ -199,7 +193,7 @@
 
 				$scope.overlay = nbPictureService.getMapOverlay(pictureId, overlayId);
 
-				$scope.$emit('nbPictureMapEditor:mapAreas', nbPictureService.getMapAreas(pictureId));
+				$scope.$emit('nbPicture:mapAreasChanged', nbPictureService.getMapAreas(pictureId));
 
 				if (nbPictureService.onBaseLoad(pictureId, overlayId)) {
 					render();
@@ -232,9 +226,8 @@
 				}
 			}));
 
-			deregister.push($scope.$on('nbPicture:resize', function (e) {
-				render();
-			}));
+			deregister.push($scope.$on('nbPicture:resize', render));
+			deregister.push($scope.$on('nbPicture:render', render));
 		};
 
 		/**
@@ -257,7 +250,7 @@
 				var size = nbPictureUtilService.getSize(area.shape, area.$$coords);
 				var avgSize = Math.round((size.width + size.height) / 2);
 
-				areas[index].style = {
+				area.$$style = {
 					'top': center[1] + 'px',
 					'left': center[0] + 'px',
 					'font-size': avgSize + 'px'
@@ -272,7 +265,7 @@
 		 * @param {Object} area
 		 */
 		function openAreaDialog (area) {
-			var config = nbPictureConfig.map.overlays.ui.areaDialog;
+			var config = nbPictureConfig.map.overlays.editorUi.areaDialog;
 			var model;
 
 			if (angular.isFunction(config.model)) {
@@ -287,10 +280,7 @@
 					nbPictureService.setMapArea(pictureId, _.merge({}, area, result));
 
 					$timeout(function () {
-						$scope.$emit('nbPictureMapEditor:mapAreas', nbPictureService.getMapAreas(pictureId));
-
-						render();
-						$scope.$apply();
+						$scope.$emit('nbPicture:mapAreasChanged', nbPictureService.getMapAreas(pictureId));
 					});
 				});
 		}

@@ -55,6 +55,8 @@ module.exports = function (grunt) {
 					'src/js/nb-picture-map-editor-overlay-ui.directive.js',
 					'src/js/nb-picture-map-editor-overlay-ui-areas.controller.js',
 					'src/js/nb-picture-map-editor-overlay-ui-areas.directive.js',
+					'src/js/nb-picture-map-editor-overlay-debug.controller.js',
+					'src/js/nb-picture-map-editor-overlay-debug.directive.js',
 					'build/js/<%= pkg.name %>-templates.js'
 				],
 				dest: 'dist/js/<%= pkg.name %>.js'

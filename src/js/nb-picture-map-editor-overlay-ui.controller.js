@@ -26,7 +26,6 @@
 
 		var tools; // {Object} Flat copy of `$scope.overlay.tools` keyed by tool ID.
 		var shape; // {String} Current shape.
-		var debug; // {Boolean}
 
 		/**
 		 * Fired after the toolbar is dropped.
@@ -169,7 +168,6 @@
 		 */
 		function toggleTool (toolId) {
 			var parts = toolId.split('/');
-			var tool = tools[toolId];
 
 			// @todo Use the following once tools are pluggable.
 //			if (parts.length === 1) {
@@ -180,23 +178,14 @@
 //			}
 
 			if (parts[0] === 'debug') {
-				if (tool.$$active) {
-					debug = false;
-					toggleSingle(toolId, false);
-				}
-				else {
-					debug = true;
-					toggleSingle(toolId, true);
-				}
-
-				// @todo
-				console.log('toggle debug ' + debug);
+				var overlay = nbPictureService.getMapOverlay(pictureId, 'editorDebug');
+				var flag = !(overlay.show);
+				toggleSingle(toolId, flag);
+				nbPictureService[flag ? 'showMapOverlay' : 'hideMapOverlay'](pictureId, 'editorDebug');
 			}
 			else if (parts[0] === 'shape') {
 				shape = parts[1];
 				toggleGroup(toolId);
-
-				console.log('toggle shape ' + shape);
 			}
 		}
 

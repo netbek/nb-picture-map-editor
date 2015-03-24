@@ -16,7 +16,7 @@
 	nbPictureMapEditorDemoAreaDialogController.$inject = ['$scope', 'dialogService', '_', 'nbPictureConfig'];
 	function nbPictureMapEditorDemoAreaDialogController ($scope, dialogService, _, nbPictureConfig) {
 		/*jshint validthis: true */
-		var config = nbPictureConfig.map.overlays.ui.areaDialog;
+		var config = nbPictureConfig.map.overlays.editorUi.areaDialog;
 
 		this.targetIdOptions = getTargetIdOptions();
 

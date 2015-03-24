@@ -57,26 +57,29 @@
 						buttonColor: 'grey',
 						buttonActiveColor: 'white',
 						tools: {
-							shape: {
-								type: 'group',
-								tools: {
-									circle: {
-										active: true,
-										icon: {
-											id: 'circle'
-										},
-										title: 'Switch to circle marker'
-									}
-								}
-							},
+//							shape: {
+//								type: 'group',
+//								tools: {
+//									circle: {
+//										active: true,
+//										icon: {
+//											id: 'circle'
+//										},
+//										title: 'Switch to circle marker'
+//									}
+//								}
+//							},
 							debug: {
-								active: true,
 								icon: {
-									id: 'eye'
+									id: 'wrench'
 								},
-								title: 'Toggle debug'
+								title: 'Debug'
 							}
 						}
+					},
+					editorDebug: {
+						show: false,
+						alwaysOn: true
 					}
 				}
 			},
