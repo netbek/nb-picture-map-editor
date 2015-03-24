@@ -35,7 +35,7 @@
 	left: 1em;
 }
 
-.picture-map-editor-overlay-ui-bar-handle {
+.picture-map-editor-overlay-ui-tools-handle {
 	display: block;
 	height: 1em;
 	background-color: #000;
@@ -44,22 +44,50 @@
 	cursor: move;
 }
 
-.picture-map-editor-overlay-ui-bar ul {
+.picture-map-editor-overlay-ui-tools-content {
 	list-style: none;
 	margin: 0;
 	padding: 0.25em;
+	font-size: 1em;
+	line-height: 1em;
 	background-color: rgba(0, 0, 0, 0.8);
-	border-bottom-left-radius: 0.4em;
-	border-bottom-right-radius: 0.4em;
+	border-radius: 0.4em;
+	cursor: move;
 }
 
-.picture-map-editor-overlay-ui-bar li {
+.picture-map-editor-overlay-ui-tools-single,
+.picture-map-editor-overlay-ui-tools-group-item {
 	list-style: none;
 	margin: 0;
 	padding: 0.25em;
 }
 
-.picture-map-editor-overlay-ui-bar button {
+.picture-map-editor-overlay-ui-tools-group {
+	list-style: none;
+	margin: 0;
+	padding: 0;
+}
+
+.picture-map-editor-overlay-ui-tools-single,
+.picture-map-editor-overlay-ui-tools-group {
+	border-top: 1px solid rgba(255, 255, 255, 0.2);
+	margin-top: 0.25em;
+	padding-top: 0.25em;
+}
+
+.picture-map-editor-overlay-ui-tools-content li:first-child .picture-map-editor-overlay-ui-tools-single  {
+	border: none;
+	margin-top: 0;
+	padding-top: 0.25em;
+}
+
+.picture-map-editor-overlay-ui-tools-content li:first-child .picture-map-editor-overlay-ui-tools-group {
+	border: none;
+	margin-top: 0;
+	padding-top: 0;
+}
+
+.picture-map-editor-overlay-ui-tools-button {
 	padding: 0;
 	margin: 0;
 	font-size: 1em;

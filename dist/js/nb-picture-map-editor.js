@@ -87,12 +87,14 @@
 		var overlayId = 'ui'; // {String} Overlay ID as defined in config.
 		var flags = {
 			init: false, // {Boolean} Whether init() has been fired.
-			render: false // {Boolean} Whether render() has been fired.
+			initTools: false // {Boolean} Whether initTools() has been fired.
 		};
 		var deregister = [];
 		var pictureId;
 
-		var tool; // {String} Active tool.
+		var tools; // {Array}
+		var shape; // {String}
+		var debug; // {Boolean}
 
 		/**
 		 * Fired after the toolbar is dropped.
@@ -109,15 +111,10 @@
 		/**
 		 * Fired after a button in the toolbar is clicked.
 		 *
-		 * @param {String} id Button ID.
+		 * @param {String} toolId
 		 */
-		$scope.clickButton = function (id) {
-			if (tool !== id && $scope.overlay.buttons && $scope.overlay.buttons[id]) {
-				_.forEach($scope.overlay.buttons, function (value, key) {
-					$scope.overlay.buttons[key].$$active = (key === id);
-				});
-				tool = id;
-			}
+		$scope.clickButton = function (toolId) {
+			toggleTool(toolId);
 		};
 
 		/**
@@ -141,7 +138,7 @@
 
 				$scope.overlay = nbPictureService.getMapOverlay(pictureId, overlayId);
 
-				render();
+				initTools();
 			};
 			var completeWatch = angular.noop;
 
@@ -175,20 +172,145 @@
 		/**
 		 *
 		 */
-		function render () {
-			if (!flags.render) {
-				flags.render = true;
+		function initTools () {
+			if (flags.initTools) {
+				return;
+			}
 
-				if ($scope.overlay.buttons) {
-					// Add ID to buttons.
-					_.forEach($scope.overlay.buttons, function (value, key) {
-						$scope.overlay.buttons[key].$$id = key;
+			flags.initTools = true;
+
+			tools = {};
+			var overlayTools = [];
+			var toggleToolIds = [];
+
+			_.forEach($scope.overlay.tools, function (group, groupsId) {
+				if (group.type === 'group') {
+					var newGroup = [];
+
+					_.forEach(group.tools, function (tool, toolsId) {
+						var id = groupsId + '/' + toolsId;
+						var newTool = _.pick(tool, ['icon', 'title']);
+						newTool.$$id = id;
+						newTool.$$group = groupsId;
+						newTool.type = 'button';
+						tools[id] = newTool;
+
+						newGroup.push(newTool);
+
+						if (tool.active) {
+							toggleToolIds.push(id);
+						}
 					});
 
-					// Activate the first button.
-					$scope.clickButton(_.keys($scope.overlay.buttons)[0]);
+					overlayTools.push({
+						$$id: groupsId,
+						type: 'group',
+						tools: newGroup
+					});
 				}
+				else {
+					var id = groupsId;
+					var newTool = _.pick(group, ['icon', 'title']);
+					newTool.$$id = id;
+					newTool.$$group = groupsId;
+					newTool.type = 'button';
+					tools[groupsId] = newTool;
+
+					overlayTools.push(newTool);
+
+					if (group.active) {
+						toggleToolIds.push(id);
+					}
+				}
+			});
+
+			$scope.overlay.tools = overlayTools;
+
+			_.forEach(toggleToolIds, function (toolId) {
+				toggleTool(toolId);
+			});
+		}
+
+		/**
+		 *
+		 * @param {string} toolId
+		 */
+		function toggleTool (toolId) {
+			if (!tools || !tools[toolId]) {
+				return;
 			}
+
+			var p = toolId.split('/');
+			var tool = tools[toolId];
+
+			if (p[0] === 'debug') {
+				if (tool.$$active) {
+					debug = false;
+					toggleSingle(toolId, false);
+				}
+				else {
+					debug = true;
+					toggleSingle(toolId, true);
+				}
+
+				// @todo
+				console.log('toggle debug ' + debug);
+			}
+			else if (p[0] === 'shape') {
+				shape = p[1];
+				toggleGroup(toolId);
+			}
+		}
+
+		/**
+		 *
+		 * @param {String} toolId
+		 * @param {Boolean} flag
+		 */
+		function toggleSingle (toolId, flag) {
+			tools[toolId].$$active = flag;
+
+			var tool = _.find($scope.overlay.tools, {$$id: toolId});
+			if (tool) {
+				tool.$$active = flag;
+			}
+		}
+
+		/**
+		 *
+		 * @param {String} toolId
+		 * @param {Boolean} flag
+		 */
+		function toggleGroup (toolId, flag) {
+			var p = toolId.split('/');
+			var siblings = _.where(tools, {$$group: p[0]});
+
+			_.forEach(siblings, function (sibling) {
+				var active;
+
+				if (flag === true || flag === false) {
+					if (sibling.$$id === toolId) {
+						active = flag;
+					}
+					else {
+						return;
+					}
+				}
+				else {
+					active = (sibling.$$id === toolId);
+				}
+
+				sibling.$$active = active;
+
+				var p = sibling.$$id.split('/');
+				var group = _.find($scope.overlay.tools, {$$group: p[0]});
+				if (group) {
+					var tool = _.find(group.tools, {$$id: toolId});
+					if (tool) {
+						tool.$$active = flag;
+					}
+				}
+			});
 		}
 
 		/**
@@ -249,7 +371,7 @@
 			replace: true,
 			scope: true,
 			controller: 'nbPictureMapEditorOverlayUiController',
-			templateUrl: 'templates/nb-picture-map-editor-overlay-ui.html',
+			templateUrl: '../src/templates/nb-picture-map-editor-overlay-ui.html?_='+Date.now(),
 			link: function (scope, element, attrs, controller) {
 				controller.init();
 
@@ -588,7 +710,7 @@
 			replace: true,
 			scope: true,
 			controller: 'nbPictureMapEditorOverlayUiAreasController',
-			templateUrl: 'templates/nb-picture-map-editor-overlay-ui-areas.html',
+			templateUrl: '../src/templates/nb-picture-map-editor-overlay-ui-areas.html?_='+Date.now(),
 			link: function (scope, element, attrs, controller) {
 				controller.init();
 
@@ -621,30 +743,65 @@ angular.module("templates/nb-picture-map-editor-overlay-ui-areas.html", []).run(
 angular.module("templates/nb-picture-map-editor-overlay-ui.html", []).run(["$templateCache", function($templateCache) {
   $templateCache.put("templates/nb-picture-map-editor-overlay-ui.html",
     "<div class=\"picture-map-editor-overlay-ui\">\n" +
-    "	<div ng-if=\"overlay.buttons\"\n" +
+    "	<div ng-if=\"overlay.tools\"\n" +
     "		 class=\"picture-map-editor-overlay-ui-bar\"\n" +
     "		 jqyoui-draggable=\"{animate: true, onStop: 'stopBarDrag'}\"\n" +
     "		 data-drag=\"true\">\n" +
-    "		<div class=\"picture-map-editor-overlay-ui-bar-handle\"></div>\n" +
-    "		<ul>\n" +
-    "			<li ng-repeat=\"button in overlay.buttons track by button.$$id\">\n" +
-    "				<button ng-click=\"clickButton(button.$$id)\"\n" +
-    "						ng-class=\"{'active': button.$$active}\"\n" +
-    "						ng-attr-title=\"{{button.title}}\"\n" +
-    "						ng-switch=\"button.$$active\">\n" +
-    "					<span ng-switch-when=\"true\"\n" +
-    "						  nb-icon-once\n" +
-    "						  data-title=\"{{button.title}}\"\n" +
-    "						  data-color=\"{{overlay.buttonActiveColor}}\"\n" +
-    "						  data-id=\"{{button.icon.id}}\"\n" +
-    "						  data-hover-id=\"{{button.icon.hoverId}}\"></span>\n" +
-    "					<span ng-switch-default\n" +
-    "						  nb-icon-once\n" +
-    "						  data-title=\"{{button.title}}\"\n" +
-    "						  data-color=\"{{overlay.buttonColor}}\"\n" +
-    "						  data-id=\"{{button.icon.id}}\"\n" +
-    "						  data-hover-id=\"{{button.icon.hoverId}}\"></span>\n" +
-    "				</button>\n" +
+    "		<ul class=\"picture-map-editor-overlay-ui-tools-content\">\n" +
+    "			<li ng-repeat=\"group in overlay.tools track by group.$$id\">\n" +
+    "				<div ng-switch=\"group.type\">\n" +
+    "					<ul ng-switch-when=\"group\"\n" +
+    "						class=\"picture-map-editor-overlay-ui-tools-group\">\n" +
+    "						<li ng-repeat=\"tool in group.tools track by tool.$$id\"\n" +
+    "							class=\"picture-map-editor-overlay-ui-tools-group-item\">\n" +
+    "							<div ng-switch=\"tool.type\">\n" +
+    "								<a ng-switch-when=\"button\"\n" +
+    "								   ng-click=\"clickButton(tool.$$id)\"\n" +
+    "								   ng-class=\"{'active': tool.$$active}\"\n" +
+    "								   class=\"picture-map-editor-overlay-ui-tools-button\"\n" +
+    "								   ng-attr-title=\"{{tool.title}}\"\n" +
+    "								   ng-switch=\"tool.$$active\">\n" +
+    "									<span ng-switch-when=\"true\"\n" +
+    "										  nb-icon-once\n" +
+    "										  data-title=\"{{tool.title}}\"\n" +
+    "										  data-color=\"{{overlay.buttonActiveColor}}\"\n" +
+    "										  data-id=\"{{tool.icon.id}}\"\n" +
+    "										  data-hover-id=\"{{tool.icon.hoverId}}\"></span>\n" +
+    "									<span ng-switch-default\n" +
+    "										  nb-icon-once\n" +
+    "										  data-title=\"{{tool.title}}\"\n" +
+    "										  data-color=\"{{overlay.buttonColor}}\"\n" +
+    "										  data-id=\"{{tool.icon.id}}\"\n" +
+    "										  data-hover-id=\"{{tool.icon.hoverId}}\"></span>\n" +
+    "								</a>\n" +
+    "							</div>\n" +
+    "						</li>\n" +
+    "					</ul>\n" +
+    "					<div ng-switch-default\n" +
+    "						 class=\"picture-map-editor-overlay-ui-tools-single\">\n" +
+    "						<div ng-switch=\"group.type\">\n" +
+    "							<a ng-switch-when=\"button\"\n" +
+    "							   ng-click=\"clickButton(group.$$id)\"\n" +
+    "							   ng-class=\"{'active': group.$$active}\"\n" +
+    "							   class=\"picture-map-editor-overlay-ui-tools-button\"\n" +
+    "							   ng-attr-title=\"{{group.title}}\"\n" +
+    "							   ng-switch=\"group.$$active\">\n" +
+    "								<span ng-switch-when=\"true\"\n" +
+    "									  nb-icon-once\n" +
+    "									  data-title=\"{{group.title}}\"\n" +
+    "									  data-color=\"{{overlay.buttonActiveColor}}\"\n" +
+    "									  data-id=\"{{group.icon.id}}\"\n" +
+    "									  data-hover-id=\"{{group.icon.hoverId}}\"></span>\n" +
+    "								<span ng-switch-default\n" +
+    "									  nb-icon-once\n" +
+    "									  data-title=\"{{group.title}}\"\n" +
+    "									  data-color=\"{{overlay.buttonColor}}\"\n" +
+    "									  data-id=\"{{group.icon.id}}\"\n" +
+    "									  data-hover-id=\"{{group.icon.hoverId}}\"></span>\n" +
+    "							</a>\n" +
+    "						</div>\n" +
+    "					</div>\n" +
+    "				</div>\n" +
     "			</li>\n" +
     "		</ul>\n" +
     "	</div>\n" +

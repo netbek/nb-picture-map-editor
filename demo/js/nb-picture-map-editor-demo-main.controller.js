@@ -30,14 +30,14 @@
 				areas: [
 					{
 						shape: 'circle',
-						coords: [0.456,0.297,0.05],
+						coords: [0.456, 0.297, 0.05],
 						data: {
 							target_id: 5
 						}
 					},
 					{
 						shape: 'circle',
-						coords: [0.537,0.589,0.05],
+						coords: [0.537, 0.589, 0.05],
 						data: {
 							target_id: 1
 						}
@@ -56,12 +56,25 @@
 						alwaysOn: true,
 						buttonColor: 'grey',
 						buttonActiveColor: 'white',
-						buttons: {
-							point: {
+						tools: {
+							shape: {
+								type: 'group',
+								tools: {
+									circle: {
+										active: true,
+										icon: {
+											id: 'circle'
+										},
+										title: 'Switch to circle marker'
+									}
+								}
+							},
+							debug: {
+								active: true,
 								icon: {
-									id: 'marker'
+									id: 'eye'
 								},
-								title: 'Point'
+								title: 'Toggle debug'
 							}
 						}
 					}

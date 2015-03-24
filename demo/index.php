@@ -26,9 +26,9 @@
 		<script src="../bower_components/nb-lodash/dist/js/nb-lodash.js"></script>
 		<script src="../bower_components/nb-icon/dist/js/nb-icon.js"></script>
 		<script src="../bower_components/nb-picture/dist/js/nb-picture.js"></script>
-
-		<script src="../dist/js/nb-picture-map-editor.js"></script>
 <!--
+		<script src="../dist/js/nb-picture-map-editor.js"></script>
+-->
 		<script src="../src/js/nb-picture-map-editor.module.js"></script>
 		<script src="../src/js/nb-picture-map-editor.filters.js"></script>
 		<script src="../src/js/nb-picture-map-editor.directive.js"></script>
@@ -37,7 +37,7 @@
 		<script src="../src/js/nb-picture-map-editor-overlay-ui-areas.controller.js"></script>
 		<script src="../src/js/nb-picture-map-editor-overlay-ui-areas.directive.js"></script>
 		<script src="../src/js/nb-picture-map-editor-templates.js"></script>
--->
+
 		<script src="js/nb-picture-map-editor-demo.module.js"></script>
 		<script src="js/nb-picture-map-editor-demo-config.service.js"></script>
 		<script src="js/nb-picture-map-editor-demo-input.directive.js"></script>

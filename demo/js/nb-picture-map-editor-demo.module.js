@@ -41,7 +41,7 @@
 								},
 								areaDialog: {
 									id: 'nbPictureMapEditorDemoAreaDialog',
-									templateUrl: 'templates/nb-picture-map-editor-demo-area-dialog.html',
+									templateUrl: 'templates/nb-picture-map-editor-demo-area-dialog.html?_='+Date.now(),
 									model: function (area) {
 										return {
 											data: {
