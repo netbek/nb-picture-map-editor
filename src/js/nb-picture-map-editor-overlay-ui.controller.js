@@ -24,8 +24,8 @@
 		var deregister = [];
 		var pictureId;
 
-		var tools; // {Array}
-		var shape; // {String}
+		var tools; // {Object} Flat copy of `$scope.overlay.tools` keyed by tool ID.
+		var shape; // {String} Current shape.
 		var debug; // {Boolean}
 
 		/**
@@ -112,70 +112,74 @@
 			flags.initTools = true;
 
 			tools = {};
-			var overlayTools = [];
-			var toggleToolIds = [];
+			var newTools = [];
+			var toggleTools = [];
 
 			_.forEach($scope.overlay.tools, function (group, groupsId) {
 				if (group.type === 'group') {
 					var newGroup = [];
 
 					_.forEach(group.tools, function (tool, toolsId) {
-						var id = groupsId + '/' + toolsId;
+						var toolId = groupsId + '/' + toolsId;
 						var newTool = _.pick(tool, ['icon', 'title']);
-						newTool.$$id = id;
+						newTool.$$id = toolId;
 						newTool.$$group = groupsId;
 						newTool.type = 'button';
-						tools[id] = newTool;
 
+						tools[toolId] = newTool;
 						newGroup.push(newTool);
 
 						if (tool.active) {
-							toggleToolIds.push(id);
+							toggleTools.push(toolId);
 						}
 					});
 
-					overlayTools.push({
+					newTools.push({
 						$$id: groupsId,
 						type: 'group',
 						tools: newGroup
 					});
 				}
 				else {
-					var id = groupsId;
+					var toolId = groupsId;
 					var newTool = _.pick(group, ['icon', 'title']);
-					newTool.$$id = id;
+					newTool.$$id = toolId;
 					newTool.$$group = groupsId;
 					newTool.type = 'button';
-					tools[groupsId] = newTool;
 
-					overlayTools.push(newTool);
+					tools[groupsId] = newTool;
+					newTools.push(newTool);
 
 					if (group.active) {
-						toggleToolIds.push(id);
+						toggleTools.push(toolId);
 					}
 				}
 			});
 
-			$scope.overlay.tools = overlayTools;
+			$scope.overlay.tools = newTools;
 
-			_.forEach(toggleToolIds, function (toolId) {
+			_.forEach(toggleTools, function (toolId) {
 				toggleTool(toolId);
 			});
 		}
 
 		/**
 		 *
-		 * @param {string} toolId
+		 * @param {string} toolId Tool ID. Format: "group/tool" for tools in groups, "tool" for tools not in groups.
 		 */
 		function toggleTool (toolId) {
-			if (!tools || !tools[toolId]) {
-				return;
-			}
-
-			var p = toolId.split('/');
+			var parts = toolId.split('/');
 			var tool = tools[toolId];
 
-			if (p[0] === 'debug') {
+			// @todo Use the following once tools are pluggable.
+//			if (parts.length === 1) {
+//				toggleSingle();
+//			}
+//			else if (parts.length === 2) {
+//				toggleGroup();
+//			}
+
+			if (parts[0] === 'debug') {
 				if (tool.$$active) {
 					debug = false;
 					toggleSingle(toolId, false);
@@ -188,15 +192,17 @@
 				// @todo
 				console.log('toggle debug ' + debug);
 			}
-			else if (p[0] === 'shape') {
-				shape = p[1];
+			else if (parts[0] === 'shape') {
+				shape = parts[1];
 				toggleGroup(toolId);
+
+				console.log('toggle shape ' + shape);
 			}
 		}
 
 		/**
 		 *
-		 * @param {String} toolId
+		 * @param {String} toolId Tool ID. Format: "tool".
 		 * @param {Boolean} flag
 		 */
 		function toggleSingle (toolId, flag) {
@@ -210,12 +216,12 @@
 
 		/**
 		 *
-		 * @param {String} toolId
+		 * @param {String} toolId Tool ID. Format: "group/tool".
 		 * @param {Boolean} flag
 		 */
 		function toggleGroup (toolId, flag) {
-			var p = toolId.split('/');
-			var siblings = _.where(tools, {$$group: p[0]});
+			var parts = toolId.split('/');
+			var siblings = _.where(tools, {$$group: parts[0]});
 
 			_.forEach(siblings, function (sibling) {
 				var active;
@@ -234,8 +240,8 @@
 
 				sibling.$$active = active;
 
-				var p = sibling.$$id.split('/');
-				var group = _.find($scope.overlay.tools, {$$group: p[0]});
+				var parts = sibling.$$id.split('/');
+				var group = _.find($scope.overlay.tools, {$$group: parts[0]});
 				if (group) {
 					var tool = _.find(group.tools, {$$id: toolId});
 					if (tool) {

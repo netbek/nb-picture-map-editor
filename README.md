@@ -5,3 +5,5 @@ AngularJS image map editor
 ## Usage
 
 ## To do
+
+* Pluggable tools
