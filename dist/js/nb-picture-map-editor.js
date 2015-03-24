@@ -890,7 +890,7 @@ angular.module("templates/nb-picture-map-editor-overlay-ui-areas.html", []).run(
 angular.module("templates/nb-picture-map-editor-overlay-ui.html", []).run(["$templateCache", function($templateCache) {
   $templateCache.put("templates/nb-picture-map-editor-overlay-ui.html",
     "<div class=\"picture-map-editor-overlay-ui\">\n" +
-    "	<div ng-if=\"overlay.tools\"\n" +
+    "	<div ng-if=\"overlay.tools.length\"\n" +
     "		 class=\"picture-map-editor-overlay-ui-bar\"\n" +
     "		 jqyoui-draggable=\"{animate: true, onStop: 'stopBarDrag'}\"\n" +
     "		 data-drag=\"true\">\n" +
