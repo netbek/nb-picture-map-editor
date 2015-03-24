@@ -19,7 +19,7 @@
 			replace: true,
 			scope: true,
 			controller: 'nbPictureMapEditorOverlayUiAreasController',
-			templateUrl: '../src/templates/nb-picture-map-editor-overlay-ui-areas.html?_='+Date.now(),
+			templateUrl: 'templates/nb-picture-map-editor-overlay-ui-areas.html',
 			link: function (scope, element, attrs, controller) {
 				controller.init();
 
