@@ -20,7 +20,7 @@
 					colors: {
 						black: '#000',
 						white: '#FFF',
-						grey: '#AAA'
+						grey: '#999'
 					},
 					prefix: 'icon',
 					pngUrl: '../demo/img/',

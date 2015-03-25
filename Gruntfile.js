@@ -99,7 +99,7 @@ module.exports = function (grunt) {
 					colors: {
 						black: '#000',
 						white: '#FFF',
-						grey: '#AAA'
+						grey: '#999'
 					}
 				},
 				files: [{cwd: 'src/svg/icon/', src: ['*.svg'], dest: 'src/img/'}]
