@@ -164,8 +164,8 @@
 
 		/**
 		 *
-		 * @param {string} toolId Tool ID. Format: "group/tool" for tools in groups, "tool" for tools not in groups.
-		 * @param {boolean} flag
+		 * @param {String} toolId Tool ID. Format: "group/tool" for tools in groups, "tool" for tools not in groups.
+		 * @param {Boolean} flag
 		 */
 		function toggleTool (toolId, flag) {
 			var parts = toolId.split('/');
