@@ -2,6 +2,7 @@
 	  ng-show="overlay.show"
 	  ng-click="click($event)">
 	<span class="picture-map-editor-overlay-debug-popup"
+		  ng-if="area.$$content.length"
 		  ng-repeat="area in areas track by area.$$id"
 		  ng-attr-style="{{area.$$style|style}}">
 		<span ng-bind-html="area.$$content|trustedHtml"></span>

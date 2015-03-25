@@ -13,8 +13,8 @@
 		.module('nb.pictureMapEditor')
 		.controller('nbPictureMapEditorOverlayDebugController', nbPictureMapEditorOverlayDebugController);
 
-	nbPictureMapEditorOverlayDebugController.$inject = ['$scope', '$element', '$attrs', '$timeout', '_', 'nbPictureConfig', 'nbPictureUtilService', 'nbPictureService', 'dialogService', 'PICTURE_SHAPE'];
-	function nbPictureMapEditorOverlayDebugController ($scope, $element, $attrs, $timeout, _, nbPictureConfig, nbPictureUtilService, nbPictureService, dialogService, PICTURE_SHAPE) {
+	nbPictureMapEditorOverlayDebugController.$inject = ['$scope', '$element', '$attrs', '$timeout', '$q', '_', 'nbPictureConfig', 'nbPictureUtilService', 'nbPictureService', 'dialogService', 'PICTURE_SHAPE'];
+	function nbPictureMapEditorOverlayDebugController ($scope, $element, $attrs, $timeout, $q, _, nbPictureConfig, nbPictureUtilService, nbPictureService, dialogService, PICTURE_SHAPE) {
 		/*jshint validthis: true */
 		var overlayId = 'editorDebug'; // {String} Overlay ID as defined in config.
 		var flags = {
@@ -102,8 +102,24 @@
 
 				var build = buildFn(area);
 
-				area.$$content = build.content;
-				area.$$style = build.style;
+				$q.when(build.content)
+					.then(
+						function (data) {
+							area.$$content = data;
+						},
+						function (err) {
+							area.$$content = err;
+						}
+					);
+				$q.when(build.style)
+					.then(
+						function (data) {
+							area.$$style = data;
+						},
+						function (err) {
+							area.$$style = err;
+						}
+					);
 			});
 
 			$scope.areas = areas;
