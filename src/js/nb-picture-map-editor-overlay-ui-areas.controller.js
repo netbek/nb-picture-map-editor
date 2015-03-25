@@ -275,6 +275,8 @@
 				model = config.model;
 			}
 
+			model.$$map = nbPictureService.getMap(pictureId);
+
 			dialogService.open(config.id, config.templateUrl, model, config.options)
 				.then(function (result) {
 					nbPictureService.setMapArea(pictureId, _.merge({}, area, result));
