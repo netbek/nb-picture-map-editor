@@ -158,15 +158,16 @@
 			$scope.overlay.tools = newTools;
 
 			_.forEach(toggleTools, function (toolId) {
-				toggleTool(toolId);
+				toggleTool(toolId, true);
 			});
 		}
 
 		/**
 		 *
 		 * @param {string} toolId Tool ID. Format: "group/tool" for tools in groups, "tool" for tools not in groups.
+		 * @param {boolean} flag
 		 */
-		function toggleTool (toolId) {
+		function toggleTool (toolId, flag) {
 			var parts = toolId.split('/');
 
 			// @todo Use the following once tools are pluggable.
@@ -178,8 +179,11 @@
 //			}
 
 			if (parts[0] === 'debug') {
-				var overlay = nbPictureService.getMapOverlay(pictureId, 'editorDebug');
-				var flag = !(overlay.show);
+				if (angular.isUndefined(flag)) {
+					var overlay = nbPictureService.getMapOverlay(pictureId, 'editorDebug');
+					flag = !(overlay.show);
+				}
+
 				toggleSingle(toolId, flag);
 				nbPictureService[flag ? 'showMapOverlay' : 'hideMapOverlay'](pictureId, 'editorDebug');
 			}
