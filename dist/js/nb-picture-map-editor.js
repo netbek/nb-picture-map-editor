@@ -775,7 +775,7 @@
 		.module('nb.pictureMapEditor')
 		.controller('nbPictureMapEditorOverlayDebugController', nbPictureMapEditorOverlayDebugController);
 
-	nbPictureMapEditorOverlayDebugController.$inject = ['$scope', '$element', '$attrs', '$timeout', '$q', 'debounce', '_', 'nbPictureConfig', 'nbPictureUtilService', 'nbPictureService', 'dialogService', 'PICTURE_SHAPE'];
+	nbPictureMapEditorOverlayDebugController.$inject = ['$scope', '$element', '$attrs', '$timeout', '$q', '_', 'debounce', 'nbPictureConfig', 'nbPictureUtilService', 'nbPictureService', 'dialogService', 'PICTURE_SHAPE'];
 	function nbPictureMapEditorOverlayDebugController ($scope, $element, $attrs, $timeout, $q, _, debounce, nbPictureConfig, nbPictureUtilService, nbPictureService, dialogService, PICTURE_SHAPE) {
 		/*jshint validthis: true */
 		var overlayId = 'editorDebug'; // {String} Overlay ID as defined in config.
