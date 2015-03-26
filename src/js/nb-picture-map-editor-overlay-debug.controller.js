@@ -35,11 +35,15 @@
 
 			flags.init = true;
 
-			deregister.push($scope.$watch('$parent.$parent.picture.$$id', function (newValue, oldValue) {
-				if (newValue) {
-					pictureId = newValue;
-				}
-			}));
+			(function () {
+				var watch = $scope.$watch('$parent.$parent.picture.$$id', function (newValue, oldValue) {
+					if (newValue) {
+						pictureId = newValue;
+						watch();
+					}
+				});
+				deregister.push(watch);
+			})();
 
 			var onBaseLoad = function () {
 				completeWatch();
