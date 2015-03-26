@@ -19,9 +19,11 @@
 		var overlayId = 'editorUi'; // {String} Overlay ID as defined in config.
 		var flags = {
 			init: false, // {Boolean} Whether init() has been fired.
+			initOverlay: false, // {Boolean} Whether initOverlay() has been fired.
 			initTools: false // {Boolean} Whether initTools() has been fired.
 		};
 		var deregister = [];
+		var completeWatch = angular.noop;
 		var pictureId;
 
 		var tools; // {Object} Flat copy of `$scope.overlay.tools` keyed by tool ID.
@@ -68,15 +70,6 @@
 				deregister.push(watch);
 			})();
 
-			var onBaseLoad = function () {
-				completeWatch();
-
-				$scope.overlay = nbPictureService.getMapOverlay(pictureId, overlayId);
-
-				initTools();
-			};
-			var completeWatch = angular.noop;
-
 			// Create a one-time watcher for `picture.$$complete`. This is needed
 			// because the directive might fire its controller's `init()` after
 			// the image has been loaded. If this happened, then the controller
@@ -103,6 +96,30 @@
 				fn();
 			});
 		};
+
+		/**
+		 *
+		 */
+		function onBaseLoad () {
+			completeWatch();
+
+			initOverlay();
+
+			initTools();
+		}
+
+		/**
+		 *
+		 */
+		function initOverlay () {
+			if (flags.initOverlay) {
+				return;
+			}
+
+			flags.initOverlay = true;
+
+			$scope.overlay = nbPictureService.getMapOverlay(pictureId, overlayId);
+		}
 
 		/**
 		 *

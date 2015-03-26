@@ -92,9 +92,11 @@
 		var overlayId = 'editorUi'; // {String} Overlay ID as defined in config.
 		var flags = {
 			init: false, // {Boolean} Whether init() has been fired.
+			initOverlay: false, // {Boolean} Whether initOverlay() has been fired.
 			initTools: false // {Boolean} Whether initTools() has been fired.
 		};
 		var deregister = [];
+		var completeWatch = angular.noop;
 		var pictureId;
 
 		var tools; // {Object} Flat copy of `$scope.overlay.tools` keyed by tool ID.
@@ -131,20 +133,15 @@
 
 			flags.init = true;
 
-			deregister.push($scope.$watch('$parent.$parent.picture.$$id', function (newValue, oldValue) {
-				if (newValue) {
-					pictureId = newValue;
-				}
-			}));
-
-			var onBaseLoad = function () {
-				completeWatch();
-
-				$scope.overlay = nbPictureService.getMapOverlay(pictureId, overlayId);
-
-				initTools();
-			};
-			var completeWatch = angular.noop;
+			(function () {
+				var watch = $scope.$watch('$parent.$parent.picture.$$id', function (newValue, oldValue) {
+					if (newValue) {
+						pictureId = newValue;
+						watch();
+					}
+				});
+				deregister.push(watch);
+			})();
 
 			// Create a one-time watcher for `picture.$$complete`. This is needed
 			// because the directive might fire its controller's `init()` after
@@ -172,6 +169,30 @@
 				fn();
 			});
 		};
+
+		/**
+		 *
+		 */
+		function onBaseLoad () {
+			completeWatch();
+
+			initOverlay();
+
+			initTools();
+		}
+
+		/**
+		 *
+		 */
+		function initOverlay () {
+			if (flags.initOverlay) {
+				return;
+			}
+
+			flags.initOverlay = true;
+
+			$scope.overlay = nbPictureService.getMapOverlay(pictureId, overlayId);
+		}
 
 		/**
 		 *
@@ -406,9 +427,11 @@
 		/*jshint validthis: true */
 		var overlayId = 'editorUiAreas'; // {String} Overlay ID as defined in config.
 		var flags = {
-			init: false // {Boolean} Whether init() has been fired.
+			init: false, // {Boolean} Whether init() has been fired.
+			initOverlay: false // {Boolean} Whether initOverlay() has been fired.
 		};
 		var deregister = [];
+		var completeWatch = angular.noop;
 		var pictureId;
 		var $body = jQuery('body');
 
@@ -570,24 +593,15 @@
 
 			flags.init = true;
 
-			deregister.push($scope.$watch('$parent.$parent.$parent.picture.$$id', function (newValue, oldValue) {
-				if (newValue) {
-					pictureId = newValue;
-				}
-			}));
-
-			var onBaseLoad = function () {
-				completeWatch();
-
-				$scope.overlay = nbPictureService.getMapOverlay(pictureId, overlayId);
-
-				$scope.$emit('nbPicture:mapAreasChanged', nbPictureService.getMapAreas(pictureId));
-
-				if (nbPictureService.onBaseLoad(pictureId, overlayId)) {
-					render();
-				}
-			};
-			var completeWatch = angular.noop;
+			(function () {
+				var watch = $scope.$watch('$parent.$parent.$parent.picture.$$id', function (newValue, oldValue) {
+					if (newValue) {
+						pictureId = newValue;
+						watch();
+					}
+				});
+				deregister.push(watch);
+			})();
 
 			// Create a one-time watcher for `picture.$$complete`. This is needed
 			// because the directive might fire its controller's `init()` after
@@ -613,9 +627,6 @@
 					render();
 				}
 			}));
-
-			deregister.push($scope.$on('nbPicture:resize', render));
-			deregister.push($scope.$on('nbPicture:render', render));
 		};
 
 		/**
@@ -626,6 +637,38 @@
 				fn();
 			});
 		};
+
+		/**
+		 *
+		 */
+		function onBaseLoad () {
+			completeWatch();
+
+			initOverlay();
+
+			$scope.$emit('nbPicture:mapAreasChanged', nbPictureService.getMapAreas(pictureId));
+
+			if (nbPictureService.onBaseLoad(pictureId, overlayId)) {
+				render();
+			}
+		}
+
+		/**
+		 *
+		 */
+		function initOverlay () {
+			if (flags.initOverlay) {
+				return;
+			}
+
+			flags.initOverlay = true;
+
+			$scope.overlay = nbPictureService.getMapOverlay(pictureId, overlayId);
+
+			deregister.push($scope.$on('nbPicture:resize', render));
+
+			deregister.push($scope.$on('nbPicture:render', render));
+		}
 
 		/**
 		 *
@@ -737,9 +780,11 @@
 		/*jshint validthis: true */
 		var overlayId = 'editorDebug'; // {String} Overlay ID as defined in config.
 		var flags = {
-			init: false // {Boolean} Whether init() has been fired.
+			init: false, // {Boolean} Whether init() has been fired.
+			initOverlay: false // {Boolean} Whether initOverlay() has been fired.
 		};
 		var deregister = [];
+		var completeWatch = angular.noop;
 		var pictureId;
 
 		$scope.areas = []; // {Array} Array of highlighted map areas (not necessarily all).
@@ -754,22 +799,15 @@
 
 			flags.init = true;
 
-			deregister.push($scope.$watch('$parent.$parent.picture.$$id', function (newValue, oldValue) {
-				if (newValue) {
-					pictureId = newValue;
-				}
-			}));
-
-			var onBaseLoad = function () {
-				completeWatch();
-
-				$scope.overlay = nbPictureService.getMapOverlay(pictureId, overlayId);
-
-				if (nbPictureService.onBaseLoad(pictureId, overlayId)) {
-					render();
-				}
-			};
-			var completeWatch = angular.noop;
+			(function () {
+				var watch = $scope.$watch('$parent.$parent.picture.$$id', function (newValue, oldValue) {
+					if (newValue) {
+						pictureId = newValue;
+						watch();
+					}
+				});
+				deregister.push(watch);
+			})();
 
 			// Create a one-time watcher for `picture.$$complete`. This is needed
 			// because the directive might fire its controller's `init()` after
@@ -795,9 +833,6 @@
 					render();
 				}
 			}));
-
-			deregister.push($scope.$on('nbPicture:resize', render));
-			deregister.push($scope.$on('nbPicture:render', render));
 		};
 
 		/**
@@ -808,6 +843,41 @@
 				fn();
 			});
 		};
+
+		/**
+		 *
+		 */
+		function onBaseLoad () {
+			completeWatch();
+
+			initOverlay();
+
+			if (nbPictureService.onBaseLoad(pictureId, overlayId)) {
+				render();
+			}
+		}
+
+		/**
+		 *
+		 */
+		function initOverlay () {
+			if (flags.initOverlay) {
+				return;
+			}
+
+			flags.initOverlay = true;
+
+			$scope.overlay = nbPictureService.getMapOverlay(pictureId, overlayId);
+
+			if ($scope.overlay.debounceRender) {
+				deregister.push($scope.$on('nbPicture:resize', debounce(render, $scope.overlay.debounceRender)));
+			}
+			else {
+				deregister.push($scope.$on('nbPicture:resize', render));
+			}
+
+			deregister.push($scope.$on('nbPicture:render', render));
+		}
 
 		/**
 		 *

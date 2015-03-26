@@ -18,9 +18,11 @@
 		/*jshint validthis: true */
 		var overlayId = 'editorUiAreas'; // {String} Overlay ID as defined in config.
 		var flags = {
-			init: false // {Boolean} Whether init() has been fired.
+			init: false, // {Boolean} Whether init() has been fired.
+			initOverlay: false // {Boolean} Whether initOverlay() has been fired.
 		};
 		var deregister = [];
+		var completeWatch = angular.noop;
 		var pictureId;
 		var $body = jQuery('body');
 
@@ -192,19 +194,6 @@
 				deregister.push(watch);
 			})();
 
-			var onBaseLoad = function () {
-				completeWatch();
-
-				$scope.overlay = nbPictureService.getMapOverlay(pictureId, overlayId);
-
-				$scope.$emit('nbPicture:mapAreasChanged', nbPictureService.getMapAreas(pictureId));
-
-				if (nbPictureService.onBaseLoad(pictureId, overlayId)) {
-					render();
-				}
-			};
-			var completeWatch = angular.noop;
-
 			// Create a one-time watcher for `picture.$$complete`. This is needed
 			// because the directive might fire its controller's `init()` after
 			// the image has been loaded. If this happened, then the controller
@@ -229,9 +218,6 @@
 					render();
 				}
 			}));
-
-			deregister.push($scope.$on('nbPicture:resize', render));
-			deregister.push($scope.$on('nbPicture:render', render));
 		};
 
 		/**
@@ -242,6 +228,38 @@
 				fn();
 			});
 		};
+
+		/**
+		 *
+		 */
+		function onBaseLoad () {
+			completeWatch();
+
+			initOverlay();
+
+			$scope.$emit('nbPicture:mapAreasChanged', nbPictureService.getMapAreas(pictureId));
+
+			if (nbPictureService.onBaseLoad(pictureId, overlayId)) {
+				render();
+			}
+		}
+
+		/**
+		 *
+		 */
+		function initOverlay () {
+			if (flags.initOverlay) {
+				return;
+			}
+
+			flags.initOverlay = true;
+
+			$scope.overlay = nbPictureService.getMapOverlay(pictureId, overlayId);
+
+			deregister.push($scope.$on('nbPicture:resize', render));
+
+			deregister.push($scope.$on('nbPicture:render', render));
+		}
 
 		/**
 		 *
